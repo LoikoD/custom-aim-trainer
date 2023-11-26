@@ -54,7 +54,7 @@ public class UIController : MonoBehaviour
     UIState uiState;
     UIState prevState;
 
-    public void Awake()
+    public UIController()
     {
         if (Instance != null && Instance != this)
         {
@@ -65,7 +65,6 @@ public class UIController : MonoBehaviour
             Instance = this;
         }
     }
-
 
     private void Start()
     {

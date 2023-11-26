@@ -86,8 +86,7 @@ public class GameManager : MonoBehaviour
         Sensitivity = PlayerPrefs.GetFloat(PlayerPrefsProps.Sensitivity.ToString(), .5f);
     }
 
-
-    public void Awake()
+    public GameManager()
     {
         if (Instance != null && Instance != this)
         {
@@ -97,6 +96,9 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
         }
+    }
+    public void Awake()
+    {
 
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
