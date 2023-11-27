@@ -7,6 +7,8 @@ public class CrosshairController : MonoBehaviour
 {
     GameManager gm;
     Crosshair crosshair;
+    
+    [SerializeField] CanvasScaler scaler;
 
     void Start()
     {
