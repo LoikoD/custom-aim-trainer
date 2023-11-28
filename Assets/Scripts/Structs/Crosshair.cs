@@ -7,7 +7,6 @@ using UnityEngine;
 [System.Serializable]
 public struct Crosshair
 {
-    public GameObject crosshairObj;
     public RectTransform dot;
     public RectTransform leftLine;
     public RectTransform rightLine;
@@ -16,7 +15,6 @@ public struct Crosshair
 
     public Crosshair(GameObject obj)
     {
-        crosshairObj = obj;
         dot = obj.transform.Find("Dot").GetComponent<RectTransform>();
         Transform lines = obj.transform.Find("Lines");
         leftLine = lines.Find("Left").GetComponent<RectTransform>();
@@ -29,9 +27,18 @@ public struct Crosshair
 [System.Serializable]
 public struct CrosshairConfig
 {
+    // Width and height of the dot in pixels
     public float dotSize;
+
+    // Length of lines in pixels
     public float lineLength;
-    public float lineWidth;
+
+    // Thickness of lines in pixels
+    public float lineThickness;
+
+    // Gap between lines in pixels
     public float gap;
+
+    // Color of crosshair
     public Color color;
 }

@@ -4891,7 +4891,7 @@ MonoBehaviour:
   crosshairCfg:
     dotSize: 1
     lineLength: 12
-    lineWidth: 1
+    lineThickness: 1
     gap: 5
     color: {r: 0, g: 0, b: 0, a: 1}
   targetsOnScreen: 3

@@ -31,10 +31,10 @@ public class CrosshairController : MonoBehaviour
         crosshair.dot.sizeDelta = Vector2.one * gm.crosshairCfg.dotSize;
 
         // Length and width of lines
-        crosshair.leftLine.sizeDelta = new Vector2(gm.crosshairCfg.lineLength, gm.crosshairCfg.lineWidth);
-        crosshair.rightLine.sizeDelta = new Vector2(gm.crosshairCfg.lineLength, gm.crosshairCfg.lineWidth);
-        crosshair.topLine.sizeDelta = new Vector2(gm.crosshairCfg.lineWidth, gm.crosshairCfg.lineLength);
-        crosshair.bottomLine.sizeDelta = new Vector2(gm.crosshairCfg.lineWidth, gm.crosshairCfg.lineLength);
+        crosshair.leftLine.sizeDelta = new Vector2(gm.crosshairCfg.lineLength, gm.crosshairCfg.lineThickness);
+        crosshair.rightLine.sizeDelta = new Vector2(gm.crosshairCfg.lineLength, gm.crosshairCfg.lineThickness);
+        crosshair.topLine.sizeDelta = new Vector2(gm.crosshairCfg.lineThickness, gm.crosshairCfg.lineLength);
+        crosshair.bottomLine.sizeDelta = new Vector2(gm.crosshairCfg.lineThickness, gm.crosshairCfg.lineLength);
 
         // Gap
         crosshair.leftLine.anchoredPosition = Vector2.left * gm.crosshairCfg.gap;
