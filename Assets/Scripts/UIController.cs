@@ -400,10 +400,10 @@ public class UIController : MonoBehaviour
     {
         float newValue = value * SensSliderMaxValue;
         // Not sure if the condition is necessary, but it shouldn't make worse
-        if (!sensSlider.value.Equals(value * newValue))
+        if (!sensSlider.value.Equals(newValue))
         {
             // Will not invoke onValueChange callback
-            sensSlider.SetValueWithoutNotify(value * newValue);
+            sensSlider.SetValueWithoutNotify(newValue);
         }
     }
     public void UpdateSensField(string value)
