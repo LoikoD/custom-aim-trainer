@@ -41,6 +41,8 @@ public class UIController : MonoBehaviour
 
     // Settings panels
     [SerializeField] GameObject generalSettingsPanel;
+    [SerializeField] GameObject crosshairSettingsPanel;
+
 
     // Sensitivity panel
     [SerializeField] Slider sensSlider;
@@ -49,6 +51,10 @@ public class UIController : MonoBehaviour
 
     // Game Manager
     GameManager gm;
+
+    // Crosshair controller
+    [SerializeField] CrosshairController crosshairController;
+
 
     // UI state
     UIState uiState;
@@ -234,6 +240,42 @@ public class UIController : MonoBehaviour
     }
     // --------------
 
+    // Crosshair settings panel
+    public void OpenCrosshairSettingsPanel()
+    {
+        // Change state
+        uiState = UIState.CrosshairSettings;
+
+        // Deactivate current panel
+        settingsPanel.SetActive(false);
+
+        // Init UI
+        crosshairController.UpdatePanels();
+
+        // Activate general settings panel
+        crosshairSettingsPanel.SetActive(true);
+    }
+    public void CloseCrosshairSettingsPanel()
+    {
+        // Change state
+        uiState = UIState.MenuSettings;
+
+        // Deactivate current panel
+        crosshairSettingsPanel.SetActive(false);
+
+        settingsPanel.SetActive(true);
+
+        /*
+        // Create list of props to rewrite
+        List<PlayerPrefsProps> props = new()
+        {
+            PlayerPrefsProps.Sensitivity
+        };
+
+        // Save prefs
+        gm.SavePrefsSpecific(propsToRewrite: props);
+        */
+    }
 
     // In-game interface
     public void ShowInterface(int score, int time)
@@ -370,6 +412,9 @@ public class UIController : MonoBehaviour
             case UIState.GeneralSettings:
                 CloseGeneralSettingsPanel();
                 break;
+            case UIState.CrosshairSettings:
+                CloseCrosshairSettingsPanel();
+                break;
 
             // Pause
             case UIState.MainPause:
@@ -394,7 +439,7 @@ public class UIController : MonoBehaviour
 
 
 
-
+    #region Sensitivity control
     // Sensitivity control
     public void UpdateSensSlider(float value)
     {
@@ -465,8 +510,8 @@ public class UIController : MonoBehaviour
         gm.Sensitivity = value;
     }
     // -------------------
-
-}   
+    #endregion
+}
 
 
 public enum UIState
@@ -478,8 +523,9 @@ public enum UIState
     // Pause
     MainPause,
 
-    // General Settings
+    // Settings
     GeneralSettings,
+    CrosshairSettings,
 
     // Results
     Results,
