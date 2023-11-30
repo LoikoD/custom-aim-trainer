@@ -20,4 +20,18 @@ public struct CrosshairConfig
 
     // Color of crosshair
     public Color color;
+
+    public static string DefaultJson()
+    {
+        CrosshairConfig def = new()
+        {
+            dotSize = 4f,
+            lineLength = 20f,
+            lineThickness = 4f,
+            gap = 10f,
+            color = Color.white
+        };
+        return JsonUtility.ToJson(def);
+
+    }
 }

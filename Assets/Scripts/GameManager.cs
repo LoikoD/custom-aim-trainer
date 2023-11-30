@@ -76,14 +76,22 @@ public class GameManager : MonoBehaviour
                 case PlayerPrefsProps.Sensitivity:
                     PlayerPrefs.SetFloat(prop.ToString(), Sensitivity);
                     break;
+                case PlayerPrefsProps.Crosshair:
+                    string data = JsonUtility.ToJson(crosshairCfg);
+                    PlayerPrefs.SetString(prop.ToString(), data);
+                    break;
             }
 
         }
+
         PlayerPrefs.Save();
     }
     public void LoadPrefs()
     {
         Sensitivity = PlayerPrefs.GetFloat(PlayerPrefsProps.Sensitivity.ToString(), .5f);
+
+        string crosshairCfgJson = PlayerPrefs.GetString(PlayerPrefsProps.Crosshair.ToString(), CrosshairConfig.DefaultJson());
+        crosshairCfg = JsonUtility.FromJson<CrosshairConfig>(crosshairCfgJson);
     }
 
     public GameManager()
@@ -274,5 +282,6 @@ public class GameManager : MonoBehaviour
 public enum PlayerPrefsProps
 {
     Sensitivity,
+    Crosshair
 
 }

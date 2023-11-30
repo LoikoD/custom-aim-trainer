@@ -29,6 +29,10 @@ public class CrosshairController : MonoBehaviour
         bottomLineImage = bottomLine.GetComponent<Image>();
 
         gm = GameManager.Instance;
+    }
+
+    private void Start()
+    {
         ApplyCrosshairCfg();
     }
 

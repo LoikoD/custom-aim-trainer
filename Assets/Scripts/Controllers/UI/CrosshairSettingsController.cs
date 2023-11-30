@@ -33,7 +33,24 @@ public class CrosshairSettingsController : MonoBehaviour
     private void Awake()
     {
         gm = GameManager.Instance;
+    }
+
+    private void Start()
+    {
         UpdatePanels();
+    }
+
+    private void OnDisable()
+    {
+        // Create list of props to rewrite
+        List<PlayerPrefsProps> props = new()
+        {
+            PlayerPrefsProps.Crosshair
+        };
+
+        // Save prefs
+        gm.SavePrefsSpecific(propsToRewrite: props);
+
     }
 
     private void ChangeColor()
@@ -52,9 +69,9 @@ public class CrosshairSettingsController : MonoBehaviour
         lengthPanel.UpdateSlider(gm.crosshairCfg.lineLength);
         thicknessPanel.UpdateSlider(gm.crosshairCfg.lineThickness);
         gapPanel.UpdateSlider(gm.crosshairCfg.gap);
-        redPanel.UpdateSlider(gm.crosshairCfg.color.r);
-        greenPanel.UpdateSlider(gm.crosshairCfg.color.g);
-        bluePanel.UpdateSlider(gm.crosshairCfg.color.b);
+        redPanel.UpdateSlider(gm.crosshairCfg.color.r * 255);
+        greenPanel.UpdateSlider(gm.crosshairCfg.color.g * 255);
+        bluePanel.UpdateSlider(gm.crosshairCfg.color.b * 255);
         opacityPanel.UpdateSlider(gm.crosshairCfg.color.a);
 
         // Fields
@@ -62,9 +79,9 @@ public class CrosshairSettingsController : MonoBehaviour
         lengthPanel.UpdateField(gm.crosshairCfg.lineLength.ToString("R"));
         thicknessPanel.UpdateField(gm.crosshairCfg.lineThickness.ToString("R"));
         gapPanel.UpdateField(gm.crosshairCfg.gap.ToString("R"));
-        redPanel.UpdateField(gm.crosshairCfg.color.r.ToString("R"));
-        greenPanel.UpdateField(gm.crosshairCfg.color.g.ToString("R"));
-        bluePanel.UpdateField(gm.crosshairCfg.color.b.ToString("R"));
+        redPanel.UpdateField((gm.crosshairCfg.color.r * 255).ToString("R"));
+        greenPanel.UpdateField((gm.crosshairCfg.color.g * 255).ToString("R"));
+        bluePanel.UpdateField((gm.crosshairCfg.color.b * 255).ToString("R"));
         opacityPanel.UpdateField(gm.crosshairCfg.color.a.ToString("R"));
 
     }
