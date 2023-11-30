@@ -52,9 +52,6 @@ public class UIController : MonoBehaviour
     // Game Manager
     GameManager gm;
 
-    // Crosshair controller
-    [SerializeField] CrosshairController crosshairController;
-
 
     // UI state
     UIState uiState;
@@ -248,9 +245,6 @@ public class UIController : MonoBehaviour
 
         // Deactivate current panel
         settingsPanel.SetActive(false);
-
-        // Init UI
-        crosshairController.UpdatePanels();
 
         // Activate general settings panel
         crosshairSettingsPanel.SetActive(true);
