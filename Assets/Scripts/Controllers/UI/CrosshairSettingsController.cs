@@ -14,18 +14,18 @@ public class CrosshairSettingsController : MonoBehaviour
     #region SliderFieldPanel fields declaration
 
     // Dot
-    [SerializeField] private SliderFieldPanel dotPanel;
+    [SerializeField] private SliderFieldPanelController dotPanel;
     // Line Length
-    [SerializeField] private SliderFieldPanel lengthPanel;
+    [SerializeField] private SliderFieldPanelController lengthPanel;
     // Line Thickness
-    [SerializeField] private SliderFieldPanel thicknessPanel;
+    [SerializeField] private SliderFieldPanelController thicknessPanel;
     // Line Gap
-    [SerializeField] private SliderFieldPanel gapPanel;
+    [SerializeField] private SliderFieldPanelController gapPanel;
     // Color
-    [SerializeField] private SliderFieldPanel redPanel;
-    [SerializeField] private SliderFieldPanel greenPanel;
-    [SerializeField] private SliderFieldPanel bluePanel;
-    [SerializeField] private SliderFieldPanel opacityPanel;
+    [SerializeField] private SliderFieldPanelController redPanel;
+    [SerializeField] private SliderFieldPanelController greenPanel;
+    [SerializeField] private SliderFieldPanelController bluePanel;
+    [SerializeField] private SliderFieldPanelController opacityPanel;
 
     #endregion
 

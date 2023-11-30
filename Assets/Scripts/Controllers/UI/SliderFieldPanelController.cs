@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.VFX;
 
-public class SliderFieldPanel : MonoBehaviour
+public class SliderFieldPanelController : MonoBehaviour
 {
     public Slider slider;
     public TMP_InputField field;
