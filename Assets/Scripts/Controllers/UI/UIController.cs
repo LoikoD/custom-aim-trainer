@@ -43,12 +43,6 @@ public class UIController : MonoBehaviour
     [SerializeField] GameObject generalSettingsPanel;
     [SerializeField] GameObject crosshairSettingsPanel;
 
-
-    // Sensitivity panel
-    [SerializeField] Slider sensSlider;
-    [SerializeField] TMP_InputField sensField;
-    const int SensSliderMaxValue = 1000;
-
     // Game Manager
     GameManager gm;
 
@@ -194,9 +188,6 @@ public class UIController : MonoBehaviour
 
         }
 
-        // Init UI
-        InitGeneralSettingsUI();
-
         // Activate general settings panel
         generalSettingsPanel.SetActive(true);
     }
@@ -229,11 +220,6 @@ public class UIController : MonoBehaviour
 
         // Save prefs
         gm.SavePrefsSpecific(propsToRewrite: props);
-    }
-    private void InitGeneralSettingsUI()
-    {
-        UpdateSensField(gm.Sensitivity.ToString("R"));
-        UpdateSensSlider(gm.Sensitivity);
     }
     // --------------
 
@@ -430,81 +416,6 @@ public class UIController : MonoBehaviour
         }
     }
     // -----------
-
-
-
-    #region Sensitivity control
-    // Sensitivity control
-    public void UpdateSensSlider(float value)
-    {
-        float newValue = value * SensSliderMaxValue;
-        // Not sure if the condition is necessary, but it shouldn't make worse
-        if (!sensSlider.value.Equals(newValue))
-        {
-            // Will not invoke onValueChange callback
-            sensSlider.SetValueWithoutNotify(newValue);
-        }
-    }
-    public void UpdateSensField(string value)
-    {
-        // Not sure if the condition is necessary, but it shouldn't make worse
-        if (!sensField.text.Equals(value))
-        {
-            // Will not invoke onValueChange callback
-            sensField.SetTextWithoutNotify(value);
-        }
-    }
-    public void OnChangeSensitivitySlider(float sliderValue)
-    {
-        // Normalize to [0, 1]
-        float value = sliderValue / SensSliderMaxValue;
-
-        // Update sens field
-        string valueStr = value.ToString("R");
-        UpdateSensField(valueStr);
-
-        // Update property of game manager
-        gm.Sensitivity = value;
-
-    }
-    public void OnChangeSensitivityField(string valueStr)
-    {
-        // Replace empty value with 0
-        if (valueStr == string.Empty)
-        {
-            valueStr = "0";
-        }
-
-        // Parse string to float and clamp between 0 and 1
-        float value = float.Parse(valueStr);
-        value = Mathf.Clamp01(value);
-
-        // Update sens slider
-        UpdateSensSlider(value);
-
-        // Property of game manager will be updated with OnEndEdit
-    }
-    public void OnEndEditSensitivityField(string valueStr)
-    {
-        // Replace empty value with 0
-        if (valueStr == string.Empty)
-        {
-            valueStr = "0";
-        }
-
-        // Parse string to float and clamp between 0 and 1
-        float value = float.Parse(valueStr);
-        value = Mathf.Clamp01(value);
-
-        // Update field value
-        string checkedValueStr = value.ToString("R");
-        UpdateSensField(checkedValueStr);
-
-        // Update property of game manager
-        gm.Sensitivity = value;
-    }
-    // -------------------
-    #endregion
 }
 
 
