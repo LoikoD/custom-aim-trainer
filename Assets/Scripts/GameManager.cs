@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
@@ -56,8 +57,54 @@ public class GameManager : MonoBehaviour
 
     Coroutine timerCrtn;
 
+    private const int menuFpsLock = 60;
+    private const int gameTimeFpsLock = 300;
+
     readonly string playerActionMap = "Player";
     readonly string uiActionMap = "UI";
+
+    public GameManager()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
+    private void Awake()
+    {
+        // To use a dot as a decimal separator
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
+        // FPS lock at menu/pause
+        Application.targetFrameRate = menuFpsLock;
+
+        // Init own variables
+        rnd = new System.Random();
+
+    }
+
+    private void Start()
+    {
+        // Init this object's components
+        playerInput = GetComponent<PlayerInput>();
+
+        // Init other objects and their components
+        uiController = UIController.Instance;
+        playerController = PlayerController.Instance;
+
+        // Load 
+        LoadPrefs();
+
+        // Temporary for dev testing
+        area.transform.position = Vector3.forward * areaCfg.minDistance;
+        area.transform.localScale = new Vector3(areaCfg.width, areaCfg.height, areaCfg.depth);
+        // -------------------------
+    }
 
     public void SavePrefs(bool rewriteAll)
     {
@@ -83,7 +130,6 @@ public class GameManager : MonoBehaviour
             }
 
         }
-
         PlayerPrefs.Save();
     }
     public void LoadPrefs()
@@ -94,142 +140,134 @@ public class GameManager : MonoBehaviour
         crosshairCfg = JsonUtility.FromJson<CrosshairConfig>(crosshairCfgJson);
     }
 
-    public GameManager()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-        }
-        else
-        {
-            Instance = this;
-        }
-    }
-    public void Awake()
-    {
-
-        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
-        Application.targetFrameRate = 60;
-
-        uiController = UIController.Instance;
-        playerController = PlayerController.Instance;
-
-        playerInput = GetComponent<PlayerInput>();
-        rnd = new System.Random();
-        LoadPrefs();
-    }
-
-    public void Start()
-    {
-
-
-        // Temporary for dev testing
-        area.transform.position = Vector3.forward * areaCfg.minDistance;
-        area.transform.localScale = new Vector3(areaCfg.width, areaCfg.height, areaCfg.depth);
-        // -------------------------
-
-
-    }
-
     public void StartGame()
     {
-        Application.targetFrameRate = 300;
+        // FPS lock at game time
+        Application.targetFrameRate = gameTimeFpsLock;
+
+        // Hide cursor at game time
         Cursor.lockState = CursorLockMode.Locked;
 
+        // Init current game state
         currentScore = 0;
         shotsCount = 0;
         sumTimeToHit = 0;
         lastHitTime = Time.time;
 
+        // Spawn targets
         for (int i = 0; i < targetsOnScreen; i++)
         {
             SpawnTarget(0);
         }
 
+        // Start timer
         timerCrtn = StartCoroutine(Timer(time));
 
+        // Switch to in-game action map
         playerInput.SwitchCurrentActionMap(playerActionMap);
     }
-
-    public void ShotHit()
-    {
-        currentScore++;
-        shotsCount++;
-        sumTimeToHit += Time.time - lastHitTime;
-        lastHitTime = Time.time;
-        uiController.UpdateScoreText();
-        SpawnTarget(targetLifetime);
-    }
-
-    public void TargetTimedOut()
-    {
-        SpawnTarget(targetLifetime);
-        // -score?
-    }
-    public void ShotMiss()
-    {
-        shotsCount++;
-        // -score?
-    }
-
     public void SpawnTarget(float lifetime)
     {
+        // Choose targetPrefab
         GameObject targetPrefab;
         if (targetCfg.shape == Shape.Sphere)
         {
             targetPrefab = targetPrefabs[0];
-        } else // if (targetCfg.shape == Shape.Cube)
+        }
+        else // if (targetCfg.shape == Shape.Cube)
         {
             targetPrefab = targetPrefabs[1];
         }
+
+        // Random position inside rectangle target area
         Vector3 relativePos = new(
             (float)rnd.NextDouble() - 0.5f,
             (float)rnd.NextDouble(),
             (float)rnd.NextDouble()
         );
+
+        // Position in world
         Vector3 pos = new Vector3(
             relativePos.x * area.transform.localScale.x,
             relativePos.y * area.transform.localScale.y,
             relativePos.z * area.transform.localScale.z
         ) + area.transform.position;
 
+        // Instantiate as child of targetsParent object
         GameObject target = Instantiate(targetPrefab, pos, Quaternion.identity, targetsParent);
+
+        // Init target props (color, destroyAfterTime)
         target.GetComponent<Renderer>().material.color = targetCfg.color;
         if (lifetime == 0)
         {
+            // Infinite lifetime
             target.GetComponent<DestroyAfterTime>().enabled = false;
-        } else
+        }
+        else
         {
             target.GetComponent<DestroyAfterTime>().lifetime = lifetime;
         }
     }
+    public void TargetTimedOut()
+    {
+        // Spawn new target
+        SpawnTarget(targetLifetime);
+        // ++targetMissed?
+    }
+
+    public void ShotHit()
+    {
+        // Update current game state
+        currentScore++;
+        shotsCount++;
+        sumTimeToHit += Time.time - lastHitTime;
+        lastHitTime = Time.time;
+
+        // Update score UI
+        uiController.UpdateScoreText();
+
+        // Spawn new target
+        SpawnTarget(targetLifetime);
+    }
+    public void ShotMiss()
+    {
+        // Update current game state
+        shotsCount++;
+    }
+
+
 
     public void PauseGame()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = menuFpsLock;
         Cursor.lockState = CursorLockMode.None;
+
+        // Freeze all coroutines
         Time.timeScale = 0f;
+
+        // Switch to Menu/Pause action map
         playerInput.SwitchCurrentActionMap(uiActionMap);
-
-
     }
-
     public void ResumeGame()
     {
-        Application.targetFrameRate = 300;
+        Application.targetFrameRate = gameTimeFpsLock;
         Cursor.lockState = CursorLockMode.Locked;
+
+        // Resume all coroutines
         Time.timeScale = 1f;
+
+        // Switch to in-game action map
         playerInput.SwitchCurrentActionMap(playerActionMap);
     }
-
     public void EndGame()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = menuFpsLock;
         Cursor.lockState = CursorLockMode.None;
 
+        // Reset scene to default state (player model, destroy all targets if any, stop timer coroutine)
         SceneDefaultState();
 
+        // Calculate results
         if (shotsCount > 0)
         {
             accuracy = ((float)currentScore / shotsCount) * 100f;
@@ -243,29 +281,47 @@ public class GameManager : MonoBehaviour
         // Show Results Screen
         uiController.OpenResultsScreen();
 
+        // Switch to Menu/Pause action map
         playerInput.SwitchCurrentActionMap(uiActionMap);
     }
     public void SceneDefaultState()
     {
+        // Destroy the remaining targets
         foreach (Transform child in targetsParent)
         {
             Destroy(child.gameObject);
         }
+
+        // Set player model to default state
         playerController.DefaultState();
+
+        // Stop timer
         StopCoroutine(timerCrtn);
+
         Time.timeScale = 1f;
     }
 
     IEnumerator Timer(int seconds)
     {
+        // Update current game timer
         currentTime = seconds;
+
+        // Update UI
         uiController.UpdateTimerText();
+
         while (currentTime > 0)
         {
+            // Wait 1 second
             yield return new WaitForSeconds(1);
+
+            // Update current game timer
             currentTime--;
+
+            // Update UI
             uiController.UpdateTimerText();
         }
+
+        // If time is out, then end the game
         EndGame();
     }
 
