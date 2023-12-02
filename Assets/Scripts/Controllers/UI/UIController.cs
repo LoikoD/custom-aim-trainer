@@ -117,18 +117,18 @@ public class UIController : MonoBehaviour
     {
         uiState = UIState.Results;
 
-        Utilities.UpdateTextMeshPro(resultScoreText, "Score: " + gm.currentGameState.CurrentScore);
-        if (gm.currentGameState.ShotsCount > 0)
+        Utilities.UpdateTextMeshPro(resultScoreText, "Score: " + gm.results.Score);
+        if (gm.results.ShotsFired)
         {
-            Utilities.UpdateTextMeshPro(accuracyText, "Accuracy: " + gm.accuracy.ToString("0.##") + "%");
-            Utilities.UpdateTextMeshPro(timeToHitText, "Avg. time to hit: " + gm.avgTimeToHit.ToString("0") + "ms");
+            Utilities.UpdateTextMeshPro(accuracyText, "Accuracy: " + gm.results.Accuracy.ToString("0.##") + "%");
+            Utilities.UpdateTextMeshPro(timeToHitText, "Avg. time to hit: " + gm.results.AvgTimeToHit.ToString("0") + "ms");
         } else
         {
             Utilities.UpdateTextMeshPro(accuracyText, "Accuracy: -");
             Utilities.UpdateTextMeshPro(timeToHitText, "Avg. time to hit: -");
         }
-        Debug.Log("Accuracy: " + gm.accuracy);
-        Debug.Log("Avg. time to hit: " + gm.avgTimeToHit);
+        Debug.Log("Accuracy: " + gm.results.Accuracy);
+        Debug.Log("Avg. time to hit: " + gm.results.AvgTimeToHit);
 
         resultsScreen.SetActive(true);
     }

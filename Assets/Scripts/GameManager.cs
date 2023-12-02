@@ -49,8 +49,7 @@ public class GameManager : MonoBehaviour
     private Coroutine timerCrtn;
 
     // Results
-    public float accuracy; // %
-    public float avgTimeToHit; // in ms
+    public Results results;
 
     private const int menuFpsLock = 60;
     private const int gameTimeFpsLock = 300;
@@ -81,6 +80,7 @@ public class GameManager : MonoBehaviour
         // Init own variables
         rnd = new System.Random();
         currentGameState = new CurrentGameState();
+        results = new Results();
 
     }
 
@@ -261,15 +261,7 @@ public class GameManager : MonoBehaviour
         SceneDefaultState();
 
         // Calculate results
-        if (currentGameState.ShotsCount > 0)
-        {
-            accuracy = ((float)currentGameState.CurrentScore / currentGameState.ShotsCount) * 100f;
-            avgTimeToHit = (currentGameState.SumTimeToHit / currentGameState.CurrentScore) * 1000f;
-        }
-        else {
-            accuracy = 0f;
-            avgTimeToHit = 0f;
-        }
+        results.Calculate(currentGameState);
 
         // Show Results Screen
         uiController.OpenResultsScreen();
