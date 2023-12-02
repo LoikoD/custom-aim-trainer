@@ -67,6 +67,11 @@ public class UIController : MonoBehaviour
     {
         gm = GameManager.Instance;
 
+        // Add event handlers
+        gm.currentGameState.TimeChanged += UpdateTimerText;
+        gm.currentGameState.ScoreChanged += UpdateScoreText;
+
+
         // Init states
         uiState = UIState.MainMenu;
 
@@ -80,7 +85,7 @@ public class UIController : MonoBehaviour
 
         uiState = UIState.None;
         mainMenu.SetActive(false);
-        ShowInterface(gm.currentScore, gm.currentTime);
+        ShowInterface();
     }
 
     
@@ -112,8 +117,8 @@ public class UIController : MonoBehaviour
     {
         uiState = UIState.Results;
 
-        Utilities.UpdateTextMeshPro(resultScoreText, "Score: " + gm.currentScore);
-        if (gm.shotsCount > 0)
+        Utilities.UpdateTextMeshPro(resultScoreText, "Score: " + gm.currentGameState.CurrentScore);
+        if (gm.currentGameState.ShotsCount > 0)
         {
             Utilities.UpdateTextMeshPro(accuracyText, "Accuracy: " + gm.accuracy.ToString("0.##") + "%");
             Utilities.UpdateTextMeshPro(timeToHitText, "Avg. time to hit: " + gm.avgTimeToHit.ToString("0") + "ms");
@@ -136,7 +141,7 @@ public class UIController : MonoBehaviour
 
         uiState = UIState.None;
         resultsScreen.SetActive(false);
-        ShowInterface(gm.currentScore, gm.currentTime);
+        ShowInterface();
     }
     // -------------------
 
@@ -258,19 +263,23 @@ public class UIController : MonoBehaviour
     }
 
     // In-game interface
-    public void ShowInterface(int score, int time)
+    public void ShowInterface()
     {
-        Utilities.UpdateTextMeshPro(scoreText, "Score: " + score);
-        Utilities.UpdateTextMeshPro(timerText, "Time: " + time);
+        UpdateScoreText();
+        UpdateTimerText();
         interfaceUi.SetActive(true);
+    }
+    private void HideInterface()
+    {
+        interfaceUi.SetActive(false);
     }
     public void UpdateScoreText()
     {
-        Utilities.UpdateTextMeshPro(scoreText, "Score: " + gm.currentScore);
+        Utilities.UpdateTextMeshPro(scoreText, "Score: " + gm.currentGameState.CurrentScore.ToString());
     }
     public void UpdateTimerText()
     {
-        Utilities.UpdateTextMeshPro(timerText, "Time: " + gm.currentTime);
+        Utilities.UpdateTextMeshPro(timerText, "Time: " + gm.currentGameState.CurrentTime.ToString());
     }
     // -----------------
 
@@ -327,7 +336,7 @@ public class UIController : MonoBehaviour
         {
             case UIState.MainMenuConfirm:
                 uiState = UIState.MainMenu;
-                interfaceUi.SetActive(false);
+                HideInterface();
                 mainMenu.SetActive(true);
 
                 if (prevState == UIState.MainPause)

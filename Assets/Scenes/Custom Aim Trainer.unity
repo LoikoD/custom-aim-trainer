@@ -6516,11 +6516,6 @@ MonoBehaviour:
   targetsOnScreen: 3
   targetLifetime: 0
   time: 10
-  currentScore: 0
-  currentTime: 0
-  shotsCount: 0
-  sumTimeToHit: 0
-  lastHitTime: 0
   accuracy: 0
   avgTimeToHit: 0
 --- !u!4 &1276289323

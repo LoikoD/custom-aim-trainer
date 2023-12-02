@@ -45,17 +45,12 @@ public class GameManager : MonoBehaviour
     public float Sensitivity { get; set; }
 
     // Current state
-    public int currentScore;
-    public int currentTime;
-    public int shotsCount;
-    public float sumTimeToHit;
-    public float lastHitTime;
+    public CurrentGameState currentGameState;
+    private Coroutine timerCrtn;
 
     // Results
     public float accuracy; // %
     public float avgTimeToHit; // in ms
-
-    Coroutine timerCrtn;
 
     private const int menuFpsLock = 60;
     private const int gameTimeFpsLock = 300;
@@ -85,6 +80,7 @@ public class GameManager : MonoBehaviour
 
         // Init own variables
         rnd = new System.Random();
+        currentGameState = new CurrentGameState();
 
     }
 
@@ -92,6 +88,7 @@ public class GameManager : MonoBehaviour
     {
         // Init this object's components
         playerInput = GetComponent<PlayerInput>();
+        // -----------------------------
 
         // Init other objects and their components
         uiController = UIController.Instance;
@@ -149,19 +146,16 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         // Init current game state
-        currentScore = 0;
-        shotsCount = 0;
-        sumTimeToHit = 0;
-        lastHitTime = Time.time;
+        currentGameState.Init(time);
+
+        // Start timer
+        StartTimer();
 
         // Spawn targets
         for (int i = 0; i < targetsOnScreen; i++)
         {
             SpawnTarget(0);
         }
-
-        // Start timer
-        timerCrtn = StartCoroutine(Timer(time));
 
         // Switch to in-game action map
         playerInput.SwitchCurrentActionMap(playerActionMap);
@@ -218,13 +212,11 @@ public class GameManager : MonoBehaviour
     public void ShotHit()
     {
         // Update current game state
-        currentScore++;
-        shotsCount++;
-        sumTimeToHit += Time.time - lastHitTime;
-        lastHitTime = Time.time;
 
-        // Update score UI
-        uiController.UpdateScoreText();
+        currentGameState.CurrentScore++;
+        currentGameState.ShotsCount++;
+
+        currentGameState.LastHitTime = Time.time;
 
         // Spawn new target
         SpawnTarget(targetLifetime);
@@ -232,7 +224,7 @@ public class GameManager : MonoBehaviour
     public void ShotMiss()
     {
         // Update current game state
-        shotsCount++;
+        currentGameState.ShotsCount++;
     }
 
 
@@ -259,19 +251,20 @@ public class GameManager : MonoBehaviour
         // Switch to in-game action map
         playerInput.SwitchCurrentActionMap(playerActionMap);
     }
+
     public void EndGame()
     {
         Application.targetFrameRate = menuFpsLock;
         Cursor.lockState = CursorLockMode.None;
 
-        // Reset scene to default state (player model, destroy all targets if any, stop timer coroutine)
+        // Reset scene to default state (player model, destroy all targets if any, stop timer)
         SceneDefaultState();
 
         // Calculate results
-        if (shotsCount > 0)
+        if (currentGameState.ShotsCount > 0)
         {
-            accuracy = ((float)currentScore / shotsCount) * 100f;
-            avgTimeToHit = (sumTimeToHit / currentScore) * 1000f;
+            accuracy = ((float)currentGameState.CurrentScore / currentGameState.ShotsCount) * 100f;
+            avgTimeToHit = (currentGameState.SumTimeToHit / currentGameState.CurrentScore) * 1000f;
         }
         else {
             accuracy = 0f;
@@ -296,33 +289,9 @@ public class GameManager : MonoBehaviour
         playerController.DefaultState();
 
         // Stop timer
-        StopCoroutine(timerCrtn);
+        StopTimer();
 
         Time.timeScale = 1f;
-    }
-
-    IEnumerator Timer(int seconds)
-    {
-        // Update current game timer
-        currentTime = seconds;
-
-        // Update UI
-        uiController.UpdateTimerText();
-
-        while (currentTime > 0)
-        {
-            // Wait 1 second
-            yield return new WaitForSeconds(1);
-
-            // Update current game timer
-            currentTime--;
-
-            // Update UI
-            uiController.UpdateTimerText();
-        }
-
-        // If time is out, then end the game
-        EndGame();
     }
 
     public void QuitGame()
@@ -333,11 +302,33 @@ public class GameManager : MonoBehaviour
 
         Application.Quit();
     }
+    private void StartTimer()
+    {
+        timerCrtn = StartCoroutine(Timer());
+    }
 
+    private void StopTimer()
+    {
+        StopCoroutine(timerCrtn);
+    }
+
+    private IEnumerator Timer()
+    {
+        while (currentGameState.CurrentTime > 0)
+        {
+            // Wait 1 second
+            yield return new WaitForSeconds(1);
+
+            // Update current game timer
+            currentGameState.CurrentTime--;
+        }
+
+        EndGame();
+    }
 }
+
 public enum PlayerPrefsProps
 {
     Sensitivity,
     Crosshair
-
 }
